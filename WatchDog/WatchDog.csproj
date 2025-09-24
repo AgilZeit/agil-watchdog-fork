@@ -10,9 +10,13 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>Logger; Exception; Request; Response; Viewer; WatchDog; Monitoring; Logging; HTTP; IzyPro; Khelechy</PackageTags>
 		<Authors>Israel Ulelu, Kelechi Onyekwere</Authors>
-		<PackageId>WatchDog.NET</PackageId>
+		<!--<PackageId>WatchDog.NET</PackageId>-->
+		<PackageId>Agil.WatchDog.NET</PackageId>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>1.4.10</Version>
+		<!--<Version>1.4.10</Version>-->
+		<Version>1.4.10-agil.1</Version>
+		
+		
 		<PackageReleaseNotes>- Security Optimization
 - Query Filters Fixes and Optimizations
 - Package Assembly as DB Name Fix(MongoDB)</PackageReleaseNotes>
