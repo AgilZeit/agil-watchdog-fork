@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -17,6 +18,9 @@ using WatchDog.src.Services;
 
 namespace WatchDog
 {
+    /// <summary>
+    /// s. https://github.com/IzyPro/WatchDog
+    /// </summary>
     public static class WatchDogExtension
     {
         public static readonly IFileProvider Provider = new EmbeddedFileProvider(
@@ -82,6 +86,17 @@ namespace WatchDog
             return builder.UseMiddleware<src.WatchDogExceptionLogger>();
         }
 
+        /// <summary>
+        /// Verwende nicht das nuget-Paket, da der unveränderte Code mit dem app-Projekt in Konflikt steht.
+        /// UseRouting in dieser Methode führt dazu, dass in Middleware (XssMiddleware und ProtectionMiddleware) nicht auf den Endpoint des
+        /// httpContext zugegriffen werden kann. (Nötig für Metadata)
+        /// Ich dachte, das Problem läge in der UseEndpoints-Methode und weiß nicht recht, woran genau das Problem liegt.
+        /// Vielleicht gibt es eine sinnvollere Lösung, die auch mit dem nuget-Paket funktioniert?
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="configureOptions"></param>
+        /// <returns></returns>
+        /// <exception cref="WatchDogAuthenticationException"></exception>
         public static IApplicationBuilder UseWatchDog(this IApplicationBuilder app, Action<WatchDogOptionsModel> configureOptions)
         {
             ServiceProviderFactory.BroadcastHelper = app.ApplicationServices.GetService<IBroadcastHelper>();
@@ -96,7 +111,7 @@ namespace WatchDog
                 throw new WatchDogAuthenticationException("Parameter Password is required on .UseWatchDog()");
             }
 
-            app.UseRouting();
+            //app.UseRouting();
             app.UseMiddleware<src.WatchDog>(options);
 
 
@@ -118,11 +133,26 @@ namespace WatchDog
             if (!string.IsNullOrEmpty(options.CorsPolicy))
                 app.UseCors(options.CorsPolicy);
 
-            #if NET8_0_OR_GREATER
-            if (options.UseOutputCache)
-                app.UseOutputCache();
-            #endif
+            return app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<LoggerHub>("/wtchdlogger");
+                endpoints.MapControllerRoute(
+                    name: "WTCHDwatchpage",
+                    pattern: "WTCHDwatchpage/{action}",
+                    defaults: new { controller = "WatchPage", action = "Index" });
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapGet("watchdog", async context =>
+                {
+                    context.Response.ContentType = "text/html";
+                    await context.Response.SendFileAsync(WatchDogExtension.GetFile());
+                });
+            });
+        }
 
+        public static IApplicationBuilder UseWatchDogEndpoints(this IApplicationBuilder app)
+        {
             return app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<LoggerHub>("/wtchdlogger");
@@ -145,6 +175,7 @@ namespace WatchDog
         public static IFileInfo GetFile()
         {
             return Provider.GetFileInfo("src.WatchPage.index.html");
+
         }
 
         public static string GetFolder()
