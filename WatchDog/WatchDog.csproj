@@ -6,7 +6,8 @@
 		<!--<PackageProjectUrl>https://github.com/IzyPro/WatchDog</PackageProjectUrl>-->
 		<PackageIcon>favicon.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<RepositoryUrl>https://github.com/IzyPro/WatchDog</RepositoryUrl>
+		<!--<RepositoryUrl>https://github.com/IzyPro/WatchDog</RepositoryUrl>-->
+		<RepositoryUrl>https://github.com/AgilZeit/agil-watchdog-fork</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>Logger; Exception; Request; Response; Viewer; WatchDog; Monitoring; Logging; HTTP; IzyPro; Khelechy</PackageTags>
 		<Authors>Israel Ulelu, Kelechi Onyekwere</Authors>
@@ -24,6 +25,8 @@
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 		<IncludeSymbols>True</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+		<NoWarn>$(NoWarn);NU1605</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -65,7 +68,8 @@
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="Npgsql" Version="[5.0.0,5.0.10]" Condition="'$(TargetFramework)' == 'netcoreapp3.1'" />
 		<PackageReference Include="Npgsql" Version="6.0.4" Condition="'$(TargetFramework)' == 'net6.0'" />
-		<PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+		<!--<PackageReference Include="System.Data.SqlClient" Version="4.8.5" />-->
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.1" />
 	</ItemGroup>
 
 </Project>
